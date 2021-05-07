@@ -26,8 +26,8 @@ fn main() -> Result<()> {
 
     let mut data = Data::new();
     loop {
+        data.fetch_ongoing_match();
         draw(&data)?;
         rx.recv()?;
-        data.fetch_ongoing_match();
     }
 }

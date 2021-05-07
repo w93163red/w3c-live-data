@@ -9,8 +9,8 @@ lazy_static! {
         (0, "random"),
         (1, "human"),
         (2, "orc"),
-        (4, "undead"),
-        (8, "night elf"),
+        (4, "night elf"),
+        (8, "undead"),
     ]
     .iter()
     .cloned()
@@ -38,7 +38,7 @@ pub struct Stat {
 impl Data {
     pub fn new() -> Self {
         Data {
-            user: Data::fetch_player_profile("Xorc#21217"),
+            user: Data::fetch_player_profile("Genê#1875"),
             opponent: None,
         }
     }
@@ -51,11 +51,10 @@ impl Data {
                 let mut user = User::default();
                 user.user_id = urlencoding::decode(&id).expect("decode fail");
                 for stat_json in stats_json {
-                    println!("{:?}", stat_json);
                     let stat = Stat{
                         race: {
                             if stat_json.get("race")?.as_i64().is_none() {
-                                "Null".to_string()
+                                continue; 
                             } else {
                                 RACE_MAPPING.get(&stat_json.get("race")?.as_i64()?)?.to_string()
                             }
@@ -83,7 +82,6 @@ impl Data {
             urlencoding::encode(&user.user_id)
         )) {
             let resp_json: Value = resp.json()?;
-            println!("{:?}", resp_json);
             self.opponent = Data::inner_fetch_ongoing_match(&user.user_id, &resp_json);
             Ok(())
         } else {
