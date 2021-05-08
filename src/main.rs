@@ -8,9 +8,11 @@ use std::{
     sync::mpsc,
     thread,
     time::{Duration, Instant},
+    env
 };
 
 fn main() -> Result<()> {
+    let args: Vec<String> = env::args().collect();
     let tick_rate = Duration::from_millis(5000);
     let (tx, rx) = mpsc::channel();
 
@@ -24,7 +26,7 @@ fn main() -> Result<()> {
         }
     });
 
-    let mut data = Data::new();
+    let mut data = Data::new(&args[1]);
     loop {
         data.fetch_ongoing_match();
         draw(&data)?;

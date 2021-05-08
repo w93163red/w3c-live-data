@@ -38,9 +38,9 @@ pub struct Stat {
 }
 
 impl Data {
-    pub fn new() -> Self {
+    pub fn new(id: &str) -> Self {
         Data {
-            user: Data::fetch_player_profile("Genê#1875"),
+            user: Data::fetch_player_profile(id),
             opponent: None,
         }
     }
