@@ -18,10 +18,22 @@ pub fn draw(data: &Data) -> Result<(), io::Error> {
             .margin(1)
             .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
             .split(f.size());
+        let player_profile = Layout::default()
+            .direction(Direction::Horizontal)
+            .margin(1)
+            .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
+            .split(chunks[0]);
+        let opponent_profile = Layout::default()
+            .direction(Direction::Horizontal)
+            .margin(1)
+            .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
+            .split(chunks[1]);
         let paragraph = draw_player(&data.user);
-        f.render_widget(paragraph, chunks[0]);
+        // let player_detail_winrate = draw_winrate(&data.user);
+        f.render_widget(paragraph, player_profile[0]);
         let opponent_paragarph = draw_player(&data.opponent);
-        f.render_widget(opponent_paragarph, chunks[1]);
+        // let opponent_detail_winrate = draw_winrate(&data.opponent);
+        f.render_widget(opponent_paragarph, opponent_profile[0]);
     })?;
 
     Ok(())

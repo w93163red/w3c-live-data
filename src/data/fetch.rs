@@ -28,6 +28,7 @@ pub struct User {
     pub user_id: String,
     pub stats: Vec<Stat>,
 }
+
 #[derive(Debug)]
 pub struct Stat {
     pub race: String,
@@ -101,24 +102,57 @@ impl Data {
                 }
             }
         }
-
         None
     }
 }
 
+pub fn fetch_detail_winrate(user_id: &String) -> HashMap<String, f64> {
+    let url = format!("https://website-backend.w3champions.com/api/player-stats/{}/race-on-map-versus-race?season=7", urlencoding::encode(user_id));
+    let mut detail_winrate: HashMap<String, f64> = HashMap::new();
+    if let Ok(resp) = reqwest::blocking::get(url) {
+        if let Ok(detail_json) = resp.json::<Value>() {
+            let race_result_json = &detail_json["raceWinsOnMapByPatch"]["All"];
+            let handler = || -> Option<HashMap<String, f64>> {
+                for race_json in race_result_json.as_array()? {
+                    if race_json["race"].as_i64()? == 16 {
+                        for map_info in race_json["winLossesOnMap"].as_array()? {
+                            if map_info["map"] == "Overall" {
+                                for detail_winrate_json in map_info["winLosses"].as_array()? {
+                                    detail_winrate.insert(RACE_MAPPING.get(&detail_winrate_json.get("race")?.as_i64()?)?.to_string(), detail_winrate_json.get("winrate")?.as_f64()?);
+                                }
+                            }
+                        }
+                    }
+                }
+                Some(detail_winrate)
+            };
+            detail_winrate = handler().unwrap_or_default();
+        }
+    }
+    detail_winrate
+}
+
+
 mod tests {
+    use crate::data::fetch::fetch_detail_winrate;
+
     #[test]
-    fn get_player_profile() {
+    fn test_get_player_profile() {
         use super::Data;
         let data = Data::new();
         println!("{:?}", data.user);
     }
 
     #[test]
-    fn fetch_ongoing_match() {
+    fn test_fetch_ongoing_match() {
         use super::Data;
         let mut data = Data::new();
         data.fetch_ongoing_match();
         println!("{:?}", data);
+    }
+
+    #[test]
+    fn test_fetch_detail_winrate() {
+        println!("{:?}", fetch_detail_winrate(&"Genê#1875".to_string()));
     }
 }
