@@ -3,6 +3,7 @@ use lazy_static::lazy_static;
 use reqwest::{self};
 use serde_json::Value;
 use std::collections::HashMap;
+use crate::util::Formatf64;
 
 lazy_static! {
     pub static ref RACE_MAPPING: HashMap<i64, &'static str> = [
@@ -36,6 +37,7 @@ pub struct Stat {
     pub winrate: f64,
     pub ranking_point: i64,
 }
+
 
 impl Data {
     pub fn new(id: &str) -> Self {

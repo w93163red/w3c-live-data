@@ -1,5 +1,6 @@
 mod data;
 mod draw;
+mod util;
 
 use anyhow::Result;
 use data::fetch::Data;

@@ -5,6 +5,9 @@ use tui::style::Color;
 use tui::widgets::{Block, Borders, Paragraph, Wrap, Table, Row, TableState};
 use tui::{backend::CrosstermBackend, style::Style};
 use tui::{text::Text, Terminal};
+use crate::util::Formatf64;
+
+impl Formatf64 for f64 {}
 
 pub fn draw(data: &Data) -> Result<(), io::Error> {
     let stdout = io::stdout();
@@ -46,7 +49,7 @@ fn draw_player(user: &Option<User>) -> Paragraph<'static> {
         let mut text = Text::from(format!("User: {}", user.user_id));
         for stat in &user.stats {
             text.extend(Text::raw(format!("Race: {}", stat.race)));
-            text.extend(Text::raw(format!("Winrate: {}", stat.winrate)));
+            text.extend(Text::raw(format!("Winrate: {:.2}", stat.winrate)));
             text.extend(Text::raw(format!("RankingPoints: {}", stat.ranking_point)));
         }
         let paragraph = Paragraph::new(text)
@@ -68,7 +71,7 @@ fn draw_winrate(user: &Option<User>) -> Table {
     if let Some(user) = user {
         if let Some(detail_winrate) = &user.detail_winrate {
             let table = Table::new(vec![
-                Row::new(vec![detail_winrate["random"].to_string(), detail_winrate["human"].to_string(), detail_winrate["orc"].to_string(), detail_winrate["undead"].to_string(), detail_winrate["night elf"].to_string()])
+                Row::new(vec![detail_winrate["random"].to_string_two_bits(), detail_winrate["human"].to_string_two_bits(), detail_winrate["orc"].to_string_two_bits(), detail_winrate["undead"].to_string_two_bits(), detail_winrate["night elf"].to_string_two_bits()])
             ]).header(
                 Row::new(vec!["VS Random", "VS Human", "VS Orc", "VS Undead", "VS Night Elf"]),
             )
